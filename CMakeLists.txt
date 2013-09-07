@@ -68,3 +68,4 @@ add_subdirectory(src)
 add_subdirectory(docs)
 add_subdirectory(tests)
 
+install(FILES package.xml DESTINATION share/swiftnav)
