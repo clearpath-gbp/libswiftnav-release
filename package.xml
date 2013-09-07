@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package>
+  <name>swiftnav</name>
+  <version>0.0.3</version>
+  <description>ROS release of swiftnav library</description>
+
+  <maintainer email="mpurvis@clearpathrobotics.com">Mike Purvis</maintainer>
+  <license>GPL3</license>
+
+  <run_depend>catkin</run_depend>
+  <buildtool_depend>cmake</buildtool_depend>
+  <export>
+    <build_type>cmake</build_type>
+  </export>
+</package>
