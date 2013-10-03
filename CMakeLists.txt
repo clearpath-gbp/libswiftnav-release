@@ -27,7 +27,5 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_C_FLAGS "-Wall -Wextra -Werror -std=gnu99 ${CMAKE_C_FLAGS}")
 
 add_subdirectory(src)
-add_subdirectory(docs)
-add_subdirectory(tests)
 
 install(FILES package.xml DESTINATION share/swiftnav)
