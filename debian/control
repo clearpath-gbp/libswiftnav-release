@@ -1,0 +1,12 @@
+Source: ros-hydro-swiftnav
+Section: misc
+Priority: extra
+Maintainer: Mike Purvis <mpurvis@clearpathrobotics.com>
+Build-Depends: debhelper (>= 7.0.50~), cmake
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-hydro-swiftnav
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-hydro-catkin
+Description: ROS release of swiftnav library
