@@ -1,10 +1,10 @@
-From d8890b190f3442b5fefa70c952222d3fcfc80837 Mon Sep 17 00:00:00 2001
+From 17d803b42ded3007943dd5aaa23b58238507b7c9 Mon Sep 17 00:00:00 2001
 From: Mike Purvis <mpurvis@clearpathrobotics.com>
 Date: Sat, 7 Sep 2013 08:33:55 -0400
 Subject: [PATCH] Added install rule for package.xml
 
 ---
- CMakeLists.txt |    1 +
+ CMakeLists.txt | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
@@ -17,5 +17,5 @@ index 973b315..d7b326e 100755
  
 +install(FILES package.xml DESTINATION share/swiftnav)
 -- 
-1.7.9.5
+1.8.1.2
 
