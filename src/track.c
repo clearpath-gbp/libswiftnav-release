@@ -11,6 +11,7 @@
  */
 
 #include <math.h>
+#include <float.h>
 
 #include "pvt.h"
 #include "prns.h"
@@ -420,7 +421,7 @@ void cn0_est_init(cn0_est_state_t *s, float bw, float cn0_0,
  *
  * References:
  *    -# "Comparison of Four SNR Estimators for QPSK Modulations",
- *       Norman C.  Beaulieu, Andrew S. Toms, and David R. Pauluzzi (2000),
+ *       Norman C. Beaulieu, Andrew S. Toms, and David R. Pauluzzi (2000),
  *       IEEE Communications Letters, Vol. 4, No. 2
  *    -# "Are Carrier-to-Noise Algorithms Equivalent in All Situations?"
  *       Inside GNSS, Jan / Feb 2010.
@@ -468,7 +469,7 @@ void calc_navigation_measurement(u8 n_channels, channel_measurement_t meas[], na
 void calc_navigation_measurement_(u8 n_channels, channel_measurement_t* meas[], navigation_measurement_t* nav_meas[], double nav_time, ephemeris_t* ephemerides[])
 {
   double TOTs[n_channels];
-  double mean_TOT = 0;
+  double min_TOT = DBL_MAX;
 
   for (u8 i=0; i<n_channels; i++) {
     TOTs[i] = 1e-3 * meas[i]->time_of_week_ms;
@@ -478,29 +479,36 @@ void calc_navigation_measurement_(u8 n_channels, channel_measurement_t* meas[], 
     /** \todo Handle GPS time properly here, e.g. week rollover */
     nav_meas[i]->tot.wn = ephemerides[i]->toe.wn;
     nav_meas[i]->tot.tow = TOTs[i];
-    mean_TOT += TOTs[i];
+
+    if (gpsdifftime(nav_meas[i]->tot, ephemerides[i]->toe) > 3*24*3600)
+      nav_meas[i]->tot.wn -= 1;
+
+    if (TOTs[i] < min_TOT)
+      min_TOT = TOTs[i];
+
     nav_meas[i]->raw_pseudorange_rate = NAV_C * -meas[i]->carrier_freq / GPS_L1_HZ;
+    nav_meas[i]->doppler = meas[i]->carrier_freq;
     nav_meas[i]->snr = meas[i]->snr;
     nav_meas[i]->prn = meas[i]->prn;
 
     nav_meas[i]->carrier_phase = meas[i]->carrier_phase;
     nav_meas[i]->carrier_phase += (nav_time - meas[i]->receiver_time) * meas[i]->carrier_freq;
-    nav_meas[i]->carrier_phase = fabs(nav_meas[i]->carrier_phase);
   }
-
-  mean_TOT = mean_TOT/n_channels;
 
   double clock_err, clock_rate_err;
 
   for (u8 i=0; i<n_channels; i++) {
-    nav_meas[i]->raw_pseudorange = (mean_TOT - TOTs[i])*NAV_C + NOMINAL_RANGE;
+    nav_meas[i]->raw_pseudorange = (min_TOT - TOTs[i])*NAV_C + NOMINAL_RANGE;
 
     calc_sat_pos(nav_meas[i]->sat_pos, nav_meas[i]->sat_vel, &clock_err, &clock_rate_err, ephemerides[i], nav_meas[i]->tot);
 
-    nav_meas[i]->pseudorange = nav_meas[i]->raw_pseudorange\
+    nav_meas[i]->pseudorange = nav_meas[i]->raw_pseudorange \
                                + clock_err*NAV_C;
     nav_meas[i]->pseudorange_rate = nav_meas[i]->raw_pseudorange_rate \
                                     - clock_rate_err*NAV_C;
+
+    nav_meas[i]->tot.tow -= clock_err;
+    nav_meas[i]->tot = normalize_gps_time(nav_meas[i]->tot);
   }
 }
 
