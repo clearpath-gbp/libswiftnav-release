@@ -1,4 +1,4 @@
-From 8d4704dc79526fd1ce116efce572c3b231ce6906 Mon Sep 17 00:00:00 2001
+From 1d70cdee4fa427706353020065047cfc568fdc41 Mon Sep 17 00:00:00 2001
 From: Mike Purvis <mpurvis@clearpathrobotics.com>
 Date: Thu, 3 Oct 2013 15:22:28 -0400
 Subject: [PATCH 2/3] Avoid using architecture-specific optimizations in the

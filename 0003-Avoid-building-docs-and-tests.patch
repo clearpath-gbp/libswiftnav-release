@@ -1,4 +1,4 @@
-From 30e250777884a4cbf6c4492b072fb6117c09a29a Mon Sep 17 00:00:00 2001
+From 716b82570ef7659dc3a3476cdf30fc0d8e95662e Mon Sep 17 00:00:00 2001
 From: Mike Purvis <mpurvis@clearpathrobotics.com>
 Date: Thu, 3 Oct 2013 15:23:11 -0400
 Subject: [PATCH 3/3] Avoid building docs and tests.
