@@ -1,19 +1,19 @@
-From 55a57c1b37dae2a26dd70b3e7990377ce0eab0bb Mon Sep 17 00:00:00 2001
+From ffd2651ae928fea5b151a9de65b6bc60b9b6e880 Mon Sep 17 00:00:00 2001
 From: Mike Purvis <mpurvis@clearpathrobotics.com>
 Date: Thu, 3 Oct 2013 15:23:11 -0400
-Subject: [PATCH 3/3] Avoid building docs and tests.
+Subject: [PATCH 3/4] Avoid building docs and tests.
 
 ---
  CMakeLists.txt | 2 --
  1 file changed, 2 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 8508f9e..dc17ee8 100755
+index 9348172..8fb307f 100755
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -27,7 +27,5 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
- set(CMAKE_C_FLAGS "-Wall -Wextra -Werror -std=gnu99 ${CMAKE_C_FLAGS}")
- 
+@@ -56,7 +56,5 @@ add_subdirectory(clapack-3.2.1-CMAKE)
+ add_subdirectory(CBLAS)
+ add_subdirectory(lapacke)
  add_subdirectory(src)
 -add_subdirectory(docs)
 -add_subdirectory(tests)

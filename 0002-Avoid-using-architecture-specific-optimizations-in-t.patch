@@ -1,7 +1,7 @@
-From bf286539517cedf398284503262ce693a2452803 Mon Sep 17 00:00:00 2001
+From b7468817914d3d0bd04bbe24363043cd76fe6971 Mon Sep 17 00:00:00 2001
 From: Mike Purvis <mpurvis@clearpathrobotics.com>
 Date: Thu, 3 Oct 2013 15:22:28 -0400
-Subject: [PATCH 2/3] Avoid using architecture-specific optimizations in the
+Subject: [PATCH 2/4] Avoid using architecture-specific optimizations in the
  build farm.
 
 ---
@@ -9,12 +9,12 @@ Subject: [PATCH 2/3] Avoid using architecture-specific optimizations in the
  1 file changed, 9 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index d7b326e..8508f9e 100755
+index b54210c..9348172 100755
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -26,15 +26,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+@@ -52,15 +52,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
  # Some compiler options used globally
- set(CMAKE_C_FLAGS "-Wall -Wextra -Werror -std=gnu99 ${CMAKE_C_FLAGS}")
+ set(CMAKE_C_FLAGS "-Wall -Wextra -Wno-strict-prototypes -std=gnu99 ${CMAKE_C_FLAGS}")
  
 -if (NOT CMAKE_CROSSCOMPILING)
 -  # Detect and use optimised compiler flags for the host architecture,
@@ -22,12 +22,12 @@ index d7b326e..8508f9e 100755
 -  include(cmake/OptimizeForArchitecture.cmake)
 -  OptimizeForArchitecture()
 -  message(STATUS "Adding architecture flags: ${Vc_ARCHITECTURE_FLAGS}")
--  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 ${Vc_ARCHITECTURE_FLAGS}")
+-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${Vc_ARCHITECTURE_FLAGS}")
 -endif ()
 -
- add_subdirectory(src)
- add_subdirectory(docs)
- add_subdirectory(tests)
+ add_subdirectory(clapack-3.2.1-CMAKE)
+ add_subdirectory(CBLAS)
+ add_subdirectory(lapacke)
 -- 
 1.8.5.2 (Apple Git-48)
 
