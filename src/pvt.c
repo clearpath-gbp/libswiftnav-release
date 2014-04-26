@@ -15,15 +15,16 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "constants.h"
 #include "linear_algebra.h"
 #include "coord_system.h"
-
-#include "pvt.h"
 #include "track.h"
 
+#include "pvt.h"
+
 static double vel_solve(double rx_vel[],
-                        const navigation_measurement_t const nav_meas[GPS_NUM_SATS],
                         const u8 n_used,
+                        const navigation_measurement_t const nav_meas[n_used],
                         const double const G[n_used][4],
                         const double const X[4][n_used])
 {
@@ -46,7 +47,7 @@ static double vel_solve(double rx_vel[],
     pdot_pred = -vector_dot(3, G[j], nav_meas[j].sat_vel);
 
     /* The residual is due to the user's motion. */
-    tempvX[j] = nav_meas[j].pseudorange_rate - pdot_pred;
+    tempvX[j] = -nav_meas[j].doppler * GPS_C / GPS_L1_HZ - pdot_pred;
   }
 
   /* Use X to map our pseudorange rate residuals onto the Jacobian update.
@@ -99,7 +100,7 @@ void compute_dops(const double const H[4][4],
  * the clock offset for each receiver used to make pseudorange
  * measurements.  The steps involved are roughly the following:
  *
- *     1. account for the Earth's rotation during transmission
+ *     1. Account for the Earth's rotation during transmission
  *
  *     2. Estimate the ECEF position for each satellite measured using
  *     the downloaded ephemeris
@@ -162,34 +163,28 @@ static double pvt_solve(double rx_state[],
   }
 
   for (u8 j = 0; j < n_used; j++) {
-    /* The satellite positions need to be corrected for earth's
-     * rotation during the transmission time.  We base this correction
-     * on the range between our receiver and satellite k */
-    vector_subtract(3, rx_state, nav_meas[j].sat_pos, tempv);
+    /* The satellite positions need to be corrected for Earth's rotation during
+     * the signal time of flight. */
+    /* TODO: Explain more about how this corrects for the Sagnac effect. */
 
     /* Magnitude of range vector converted into an approximate time in secs. */
-    double tau = vector_norm(3, tempv) / NAV_C;
-    /* Rotation of Earth during transit in radians. */
-    double wEtau = NAV_OMEGAE_DOT * tau;
+    vector_subtract(3, rx_state, nav_meas[j].sat_pos, tempv);
+    double tau = vector_norm(3, tempv) / GPS_C;
 
-    /* Form rotation matrix about Z-axis for Earth's motion which will
-     * adjust for the satellite's position at time (t-tau).
-     */
-    double rotm[3][3];
-    rotm[0][0] = cos(wEtau);
-    rotm[0][1] = sin(wEtau);
-    rotm[0][2] = 0.0;
-    rotm[1][0] = -sin(wEtau);
-    rotm[1][1] = cos(wEtau);
-    rotm[1][2] = 0.0;
-    rotm[2][0] = 0.0;
-    rotm[2][1] = 0.0;
-    rotm[2][2] = 1.0;
+    /* Rotation of Earth during time of flight in radians. */
+    double wEtau = GPS_OMEGAE_DOT * tau;
 
-    /* Result in xk_new, position of satellite k in ECEF. */
-    matrix_multiply(3, 3, 1, (double *) rotm,
-                             (double *) nav_meas[j].sat_pos,
-                             (double *) xk_new);
+    /* Apply linearlised rotation about Z-axis which will adjust for the
+     * satellite's position at time t-tau. Note the rotation is through
+     * -wEtau because it is the ECEF frame that is rotating with the Earth and
+     * hence in the ECEF frame free falling bodies appear to rotate in the
+     * opposite direction.
+     *
+     * Making a small angle approximation here leads to less than 1mm error in
+     * the satellite position. */
+    xk_new[0] = nav_meas[j].sat_pos[0] + wEtau * nav_meas[j].sat_pos[1];
+    xk_new[1] = nav_meas[j].sat_pos[1] - wEtau * nav_meas[j].sat_pos[0];
+    xk_new[2] = nav_meas[j].sat_pos[2];
 
     /* Line of sight vector. */
     vector_subtract(3, xk_new, rx_state, los);
@@ -203,10 +198,8 @@ static double pvt_solve(double rx_state[],
      */
     omp[j] = nav_meas[j].pseudorange - p_pred[j];
 
-
     /* Construct a geometry matrix.  Each row (satellite) is
-     * independently normalized into a unit vector.
-     */
+     * independently normalized into a unit vector. */
     for (u8 i=0; i<3; i++) {
       G[j][i] = -los[i] / p_pred[j];
     }
@@ -221,7 +214,7 @@ static double pvt_solve(double rx_state[],
    * mixed with numerical iteration (not time-series recursion, but
    * iteration on a single set of measurements), it's basically
    * Newton's method.  There's a reasonably clear explanation of this
-   * on Wikipedia's article about GPS.
+   * in Wikipedia's article on GPS.
    */
 
   /* Gt := G^{T} */
@@ -259,7 +252,7 @@ static double pvt_solve(double rx_state[],
   /* The solution has converged! */
 
   /* Perform the velocity solution. */
-  vel_solve(&rx_state[4], nav_meas, n_used, (const double (*)[4]) G, (const double (*)[n_used]) X);
+  vel_solve(&rx_state[4], n_used, nav_meas, (const double (*)[4]) G, (const double (*)[n_used]) X);
 
   return tempd;
 }
@@ -286,7 +279,7 @@ u8 filter_solution(gnss_solution* soln, dops_t* dops)
   return 0;
 }
 
-u8 calc_PVT(const u8 n_used,
+s8 calc_PVT(const u8 n_used,
             const navigation_measurement_t const nav_meas[n_used],
             gnss_solution *soln,
             dops_t *dops)
@@ -335,12 +328,11 @@ u8 calc_PVT(const u8 n_used,
   soln->err_cov[5] = H[2][2];
 
   if (iters >= PVT_MAX_ITERATIONS) {
-    printf("Position solution not available after %d iterations, giving up.\n", iters);
     /* Reset state if solution fails */
     rx_state[0] = 0;
     rx_state[1] = 0;
     rx_state[2] = 0;
-    return -1;
+    return -4;
   }
 
   /* Save as x, y, z. */
@@ -354,27 +346,25 @@ u8 calc_PVT(const u8 n_used,
   /* Convert to lat, lon, hgt. */
   wgsecef2llh(rx_state, soln->pos_llh);
 
-  soln->clock_offset = rx_state[3] / NAV_C;
-  soln->clock_bias = rx_state[7] / NAV_C;
+  soln->clock_offset = rx_state[3] / GPS_C;
+  soln->clock_bias = rx_state[7] / GPS_C;
 
   /* Time at receiver is TOT plus time of flight. Time of flight is eqaul to
    * the pseudorange minus the clock bias. */
   soln->time = nav_meas[0].tot;
-  soln->time.tow += nav_meas[0].pseudorange / NAV_C;
+  soln->time.tow += nav_meas[0].pseudorange / GPS_C;
   /* Subtract clock offset. */
-  soln->time.tow -= rx_state[3] / NAV_C;
+  soln->time.tow -= rx_state[3] / GPS_C;
   soln->time = normalize_gps_time(soln->time);
 
   u8 ret;
   if ((ret = filter_solution(soln, dops))) {
     memset(soln, 0, sizeof(*soln));
-    memset(dops, 0, sizeof(*dops));
     /* Reset state if solution fails */
     rx_state[0] = 0;
     rx_state[1] = 0;
     rx_state[2] = 0;
-    printf("Solution filtered: %d\n", ret);
-    return -1;
+    return -ret;
   }
 
   soln->valid = 1;
