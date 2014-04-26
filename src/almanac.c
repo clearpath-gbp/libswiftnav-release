@@ -12,7 +12,7 @@
 
 #include <math.h>
 
-#include "pvt.h"
+#include "constants.h"
 #include "linear_algebra.h"
 #include "coord_system.h"
 #include "almanac.h"
@@ -59,7 +59,7 @@ void calc_sat_state_almanac(almanac_t* alm, double t, s16 week,
   /* Calculate position and velocity per ICD-GPS-200D Table 20-IV. */
 
   /* Calculate mean motion in radians/sec. */
-  double ma_dot = sqrt (NAV_GM / (alm->a * alm->a * alm->a));
+  double ma_dot = sqrt (GPS_GM / (alm->a * alm->a * alm->a));
   /* Calculate corrected mean anomaly in radians. */
   double ma = alm->ma + ma_dot * dt;
 
@@ -68,24 +68,31 @@ void calc_sat_state_almanac(almanac_t* alm, double t, s16 week,
   double ea = ma;  /* Starting value for E. */
   double ea_old;
   double temp;
+  double ecc = alm->ecc;
+  u32 count = 0;
 
+  /* TODO: Implement convergence test using integer difference of doubles,
+   * http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm */
   do {
     ea_old = ea;
-    temp = 1.0 - alm->ecc * cos(ea_old);
-    ea = ea + (ma - ea_old + alm->ecc * sin(ea_old)) / temp;
+    temp = 1.0 - ecc * cos(ea_old);
+    ea = ea + (ma - ea_old + ecc * sin(ea_old)) / temp;
+    count++;
+    if (count > 5)
+      break;
   } while (fabs(ea - ea_old) > 1.0e-14);
 
   double ea_dot = ma_dot / temp;
 
   /* Begin calculation for True Anomaly and Argument of Latitude. */
-  double temp2 = sqrt(1.0 - alm->ecc * alm->ecc);
+  double temp2 = sqrt(1.0 - ecc * ecc);
   /* Argument of Latitude = True Anomaly + Argument of Perigee. */
-  double al = atan2(temp2 * sin(ea), cos(ea) - alm->ecc) + alm->argp;
+  double al = atan2(temp2 * sin(ea), cos(ea) - ecc) + alm->argp;
   double al_dot = temp2 * ea_dot / temp;
 
   /* Calculate corrected radius based on argument of latitude. */
   double r = alm->a * temp;
-  double r_dot = alm->a * alm->ecc * sin(ea) * ea_dot;
+  double r_dot = alm->a * ecc * sin(ea) * ea_dot;
 
   /* Calculate position and velocity in orbital plane. */
   double x = r * cos(al);
@@ -94,8 +101,8 @@ void calc_sat_state_almanac(almanac_t* alm, double t, s16 week,
   double y_dot = r_dot * sin(al) + x * al_dot;
 
   /* Corrected longitude of ascending node. */
-  double om_dot = alm->rora - NAV_OMEGAE_DOT;
-  double om = alm->raaw + dt * om_dot - NAV_OMEGAE_DOT * alm->toa;
+  double om_dot = alm->rora - GPS_OMEGAE_DOT;
+  double om = alm->raaw + dt * om_dot - GPS_OMEGAE_DOT * alm->toa;
 
   /* Compute the satellite's position in Earth-Centered Earth-Fixed
    * coordinates. */
@@ -165,7 +172,7 @@ double calc_sat_doppler_almanac(almanac_t* alm, double t, s16 week,
                            vector_norm(3, vec_ref_sat);
 
   /* Return the Doppler shift. */
-  return GPS_L1_HZ * radial_velocity / NAV_C;
+  return GPS_L1_HZ * radial_velocity / GPS_C;
 }
 
 /** \} */
