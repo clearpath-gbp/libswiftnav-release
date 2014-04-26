@@ -1,4 +1,4 @@
-From 1d70cdee4fa427706353020065047cfc568fdc41 Mon Sep 17 00:00:00 2001
+From bf286539517cedf398284503262ce693a2452803 Mon Sep 17 00:00:00 2001
 From: Mike Purvis <mpurvis@clearpathrobotics.com>
 Date: Thu, 3 Oct 2013 15:22:28 -0400
 Subject: [PATCH 2/3] Avoid using architecture-specific optimizations in the
@@ -29,5 +29,5 @@ index d7b326e..8508f9e 100755
  add_subdirectory(docs)
  add_subdirectory(tests)
 -- 
-1.8.1.2
+1.8.5.2 (Apple Git-48)
 
