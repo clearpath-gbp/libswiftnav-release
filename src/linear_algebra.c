@@ -18,25 +18,6 @@
 
 #include "linear_algebra.h"
 
-#define VEC_PRINTF(v, _n) {                                     \
-    printf("%s:%u <|%s| %lf",                                   \
-           __FILE__, __LINE__, #v, v[0]);                       \
-    for (u32 _i = 1; _i < _n; _i++) printf(", %lf", v[_i]);     \
-    printf(">\n");                                              \
-  }
-
-#define MAT_PRINTF(m, _r, _c) {                    \
-    printf("%s:%u <|%s|",                          \
-           __FILE__, __LINE__, #m);                \
-    for (u32 _i = 0; _i < _r; _i++) {              \
-      printf(" [%lf", m[_i*_c + 0]);                \
-      for (u32 _j = 1; _j < _c; _j++)              \
-        printf(" %lf", m[_i*_c + _j]);               \
-      printf("]");                                 \
-      if (_r > 2 && _i < _r - 1) printf("\n\t\t\t");              \
-    }                                              \
-    printf(">\n");                                 \
-  }
 
 /* Todo(MP) -- Implement fast linear solve (all-in-one) with Cholesky
  * decomposition: we want to solve $A^{T} W A \hat{x} = A^{T} W y
@@ -70,6 +51,19 @@
  * singular and error out.
  */
 #define MATRIX_EPSILON (1e-60)
+
+
+
+void dmtx_printf(double *mtx, u32 m, u32 n)
+{
+  for (u32 i = 0; i < m; i++) {
+    printf(" [% 12lf", mtx[i*n + 0]);
+    for (u32 j = 1; j < n; j++)
+      printf(" % 12lf", mtx[i*n + j]);
+    printf("]\n");
+  }
+}
+
 
 /* \} */
 
@@ -383,7 +377,7 @@ s32 qrsolve(const double *a, u32 rows, u32 cols, const double *b, double *x) {
  */
 static inline int inv2(const double *a, double *b) {
   double det = a[0]*a[3] - a[1]*a[2];
-  if (det < MATRIX_EPSILON)
+  if (fabs(det) < MATRIX_EPSILON)
     return -1;
   b[0] = a[3]/det;
   b[1] = -a[1]/det;
@@ -405,7 +399,7 @@ static inline int inv3(const double *a, double *b) {
                  +a[3*1 + 1]*(a[3*0 + 0]*a[3*2 + 2]-a[3*0 + 2]*a[3*2 + 0]))
                 +a[3*1 + 2]*-(a[3*0 + 0]*a[3*2 + 1]-a[3*0 + 1]*a[3*2 + 0]));
 
-  if (det < MATRIX_EPSILON)
+  if (fabs(det) < MATRIX_EPSILON)
     return -1;
 
   b[3*0 + 0] = (a[3*1 + 1]*a[3*2 + 2]-a[3*1 + 2]*a[3*2 + 1])/det;
@@ -434,7 +428,7 @@ static inline int inv3(const double *a, double *b) {
 static inline int inv4(const double *a, double *b) {
   double det = (((a[4*1 + 0]*-((a[4*2 + 1]*-(a[4*0 + 2]*a[4*3 + 3]-a[4*0 + 3]*a[4*3 + 2])+a[4*2 + 2]*(a[4*0 + 1]*a[4*3 + 3]-a[4*0 + 3]*a[4*3 + 1]))+a[4*2 + 3]*-(a[4*0 + 1]*a[4*3 + 2]-a[4*0 + 2]*a[4*3 + 1]))+a[4*1 + 1]*((a[4*2 + 0]*-(a[4*0 + 2]*a[4*3 + 3]-a[4*0 + 3]*a[4*3 + 2])+a[4*2 + 2]*(a[4*0 + 0]*a[4*3 + 3]-a[4*0 + 3]*a[4*3 + 0]))+a[4*2 + 3]*-(a[4*0 + 0]*a[4*3 + 2]-a[4*0 + 2]*a[4*3 + 0])))+a[4*1 + 2]*-((a[4*2 + 0]*-(a[4*0 + 1]*a[4*3 + 3]-a[4*0 + 3]*a[4*3 + 1])+a[4*2 + 1]*(a[4*0 + 0]*a[4*3 + 3]-a[4*0 + 3]*a[4*3 + 0]))+a[4*2 + 3]*-(a[4*0 + 0]*a[4*3 + 1]-a[4*0 + 1]*a[4*3 + 0])))+a[4*1 + 3]*((a[4*2 + 0]*-(a[4*0 + 1]*a[4*3 + 2]-a[4*0 + 2]*a[4*3 + 1])+a[4*2 + 1]*(a[4*0 + 0]*a[4*3 + 2]-a[4*0 + 2]*a[4*3 + 0]))+a[4*2 + 2]*-(a[4*0 + 0]*a[4*3 + 1]-a[4*0 + 1]*a[4*3 + 0])));
 
-  if (det < MATRIX_EPSILON)
+  if (fabs(det) < MATRIX_EPSILON)
     return -1;
 
   b[4*0 + 0] = ((a[4*2 + 1]*-(a[4*1 + 2]*a[4*3 + 3]-a[4*1 + 3]*a[4*3 + 2])+a[4*2 + 2]*(a[4*1 + 1]*a[4*3 + 3]-a[4*1 + 3]*a[4*3 + 1]))+a[4*2 + 3]*-(a[4*1 + 1]*a[4*3 + 2]-a[4*1 + 2]*a[4*3 + 1]))/det;
@@ -531,7 +525,7 @@ static int rref(u32 order, u32 cols, double *m) {
  *
  *  \return     -1 if a is singular; 0 otherwise.
  */
-inline int matrix_inverse(u32 n, const double const *a, double *b) {
+inline int matrix_inverse(u32 n, const double *const a, double *b){
   /* This function is currently only used to do a linear least-squares
    * solve for x, y, z and t in the navigation filter.  Gauss-Jordan
    * elimination is not the most efficient way to do this.  In the
