@@ -50,7 +50,7 @@ cmake_minimum_required(VERSION 2.8)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 # Some compiler options used globally
-set(CMAKE_C_FLAGS "-Wall -Wextra -Wno-strict-prototypes -std=gnu99 ${CMAKE_C_FLAGS}")
+set(CMAKE_C_FLAGS "-Wall -Wextra -Wno-strict-prototypes -std=gnu99 ${CMAKE_C_FLAGS} -fPIC")
 
 add_subdirectory(clapack-3.2.1-CMAKE)
 add_subdirectory(CBLAS)
