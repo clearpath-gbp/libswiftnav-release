@@ -1,7 +1,7 @@
-From b7468817914d3d0bd04bbe24363043cd76fe6971 Mon Sep 17 00:00:00 2001
+From f28d8eff8e54307a171933216f32a4267551b82b Mon Sep 17 00:00:00 2001
 From: Mike Purvis <mpurvis@clearpathrobotics.com>
 Date: Thu, 3 Oct 2013 15:22:28 -0400
-Subject: [PATCH 2/4] Avoid using architecture-specific optimizations in the
+Subject: [PATCH 2/5] Avoid using architecture-specific optimizations in the
  build farm.
 
 ---

@@ -1,7 +1,7 @@
-From d19c9bf1fb4699414239db2c108dde527a91d255 Mon Sep 17 00:00:00 2001
+From 8b4d4db1dd7a80b4e3be432aaea8fbbc39868996 Mon Sep 17 00:00:00 2001
 From: Mike Purvis <mpurvis@clearpathrobotics.com>
 Date: Sat, 26 Apr 2014 14:45:25 -0400
-Subject: [PATCH 4/4] Downgrade CMake version requirement to match ROS Hydro.
+Subject: [PATCH 4/5] Downgrade CMake version requirement to match ROS Hydro.
 
 ---
  CMakeLists.txt | 2 +-

@@ -1,7 +1,7 @@
-From ffd2651ae928fea5b151a9de65b6bc60b9b6e880 Mon Sep 17 00:00:00 2001
+From c041365a364590f5ddad0d0c41056143417e41b4 Mon Sep 17 00:00:00 2001
 From: Mike Purvis <mpurvis@clearpathrobotics.com>
 Date: Thu, 3 Oct 2013 15:23:11 -0400
-Subject: [PATCH 3/4] Avoid building docs and tests.
+Subject: [PATCH 3/5] Avoid building docs and tests.
 
 ---
  CMakeLists.txt | 2 --
