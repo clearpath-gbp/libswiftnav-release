@@ -14,13 +14,20 @@ else (CMAKE_CROSSCOMPILING)
     include_directories(${CHECK_INCLUDE_DIRS})
     set(TEST_LIBS ${TEST_LIBS} ${CHECK_LIBRARIES} pthread swiftnav lapacke cblas m)
 
+    # Check needs to be linked against Librt on Linux
+    if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+      set(TEST_LIBS ${TEST_LIBS} rt)
+    endif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+
     include_directories("${PROJECT_SOURCE_DIR}/include/libswiftnav")
 
     add_executable(test_libswiftnav
       check_main.c
       check_utils.c
 
-      check_float_kf.c
+      check_dgnss_management.c
+      check_amb_kf.c
+      check_single_diff.c
       check_edc.c
       check_bits.c
       check_memory_pool.c

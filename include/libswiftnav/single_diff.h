@@ -16,6 +16,7 @@
 #include "common.h"
 #include "track.h"
 #include "almanac.h"
+#include "ephemeris.h"
 #include "gpstime.h"
 
 typedef struct {
@@ -40,7 +41,17 @@ void double_diff(u8 n, sdiff_t *sds, sdiff_t *dds, u8 ref_idx);
 
 int sdiff_search_prn(const void *a, const void *b);
 
+u8 make_propagated_sdiffs(u8 n_local, navigation_measurement_t *m_local,
+                          u8 n_remote, navigation_measurement_t *m_remote,
+                          double *remote_dists, double remote_pos_ecef[3],
+                          ephemeris_t *es, gps_time_t t,
+                          sdiff_t *sds);
+
 void almanacs_to_single_diffs(u8 n, almanac_t *alms, gps_time_t timestamp, sdiff_t *sdiffs);
+
+s8 copy_sdiffs_put_ref_first(u8 ref_prn, u8 num_sdiffs, sdiff_t *sdiffs, sdiff_t *sdiffs_with_ref_first);
+
+u8 filter_sdiffs(u8 num_sdiffs, sdiff_t *sdiffs, u8 num_sats_to_drop, u8 *sats_to_drop);
 
 #endif /* LIBSWIFTNAV_SINGLE_DIFF_H */
 

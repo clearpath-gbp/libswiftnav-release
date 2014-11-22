@@ -192,6 +192,16 @@ START_TEST(test_n_allocated)
 }
 END_TEST
 
+START_TEST(test_empty)
+{
+  fail_unless(!memory_pool_empty(test_pool_random),
+      "Error checking if memory pool empty, should have been non-empty");
+
+  fail_unless(memory_pool_empty(test_pool_empty),
+      "Error checking if memory pool empty, should have been empty");
+}
+END_TEST
+
 START_TEST(test_pool_to_array)
 {
   s32 xs[22];
@@ -329,6 +339,22 @@ s32 cmp_s32s(void *arg, element_t *a_, element_t *b_)
 
   return *a - *b;
 }
+
+START_TEST(test_clear)
+{
+  memory_pool_clear(test_pool_seq);
+  fail_unless(memory_pool_n_allocated(test_pool_seq) == 0,
+      "Pool still not empty after clear");
+
+  memory_pool_clear(test_pool_random);
+  fail_unless(memory_pool_n_allocated(test_pool_random) == 0,
+      "Pool still not empty after clear");
+
+  memory_pool_clear(test_pool_empty);
+  fail_unless(memory_pool_n_allocated(test_pool_empty) == 0,
+      "Pool still not empty after clear");
+}
+END_TEST
 
 START_TEST(test_sort)
 {
@@ -651,12 +677,14 @@ Suite* memory_pool_suite(void)
   tcase_add_test(tc_core, test_full);
   tcase_add_test(tc_core, test_n_free);
   tcase_add_test(tc_core, test_n_allocated);
+  tcase_add_test(tc_core, test_empty);
   tcase_add_test(tc_core, test_pool_to_array);
   tcase_add_test(tc_core, test_map);
   tcase_add_test(tc_core, test_filter_1);
   tcase_add_test(tc_core, test_filter_2);
   tcase_add_test(tc_core, test_filter_3);
   tcase_add_test(tc_core, test_filter_4);
+  tcase_add_test(tc_core, test_clear);
   tcase_add_test(tc_core, test_sort);
   tcase_add_test(tc_core, test_groupby_1);
   tcase_add_test(tc_core, test_groupby_2);

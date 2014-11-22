@@ -24,7 +24,9 @@ typedef struct {
   gps_time_t toe, toc;
   u8 valid;
   u8 healthy;
+  u8 prn;
 } ephemeris_t;
+
 
 int calc_sat_pos(double pos[3], double vel[3],
                  double *clock_err, double *clock_rate_err,
@@ -34,6 +36,8 @@ int calc_sat_pos(double pos[3], double vel[3],
 double predict_range(double rx_pos[3],
                      gps_time_t tot,
                      ephemeris_t *ephemeris);
+
+u8 ephemeris_good(ephemeris_t eph, gps_time_t t);
 
 #endif /* LIBSWIFTNAV_EPHEMERIS_H */
 
