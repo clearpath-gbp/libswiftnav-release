@@ -1,3 +1,24 @@
+## swiftnav (indigo) - 0.13.0-1
+
+The packages in the `swiftnav` repository were released into the `indigo` distro by running `/usr/local/bin/bloom-release -r indigo -t indigo swiftnav --edit-track` on `Sat, 22 Nov 2014 21:53:42 -0000`
+
+The `swiftnav` package was released.
+
+Version of package(s) in repository `swiftnav`:
+- upstream repository: https://github.com/swift-nav/libswiftnav.git
+- release repository: https://github.com/clearpath-gbp/libswiftnav-release.git
+- rosdistro version: `0.13.0-0`
+- old version: `0.13.0-0`
+- new version: `0.13.0-1`
+
+Versions of tools used:
+- bloom version: `0.5.12`
+- catkin_pkg version: `0.2.6`
+- rosdep version: `0.10.32`
+- rosdistro version: `0.3.6`
+- vcstools version: `0.1.35`
+
+
 ## swiftnav (indigo) - 0.13.0-0
 
 The packages in the `swiftnav` repository were released into the `indigo` distro by running `/usr/local/bin/bloom-release -r indigo -t indigo swiftnav --new-track` on `Sat, 22 Nov 2014 12:53:41 -0000`
