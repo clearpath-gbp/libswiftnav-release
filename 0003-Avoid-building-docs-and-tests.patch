@@ -1,0 +1,24 @@
+From 9b007ba3984f49769e2f33cd9c65aeffb9f0e6ca Mon Sep 17 00:00:00 2001
+From: Mike Purvis <mpurvis@clearpathrobotics.com>
+Date: Thu, 3 Oct 2013 15:23:11 -0400
+Subject: [PATCH 3/3] Avoid building docs and tests.
+
+---
+ CMakeLists.txt | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ea39cdf..fc011b3 100755
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -56,7 +56,5 @@ add_subdirectory(clapack-3.2.1-CMAKE)
+ add_subdirectory(CBLAS)
+ add_subdirectory(lapacke)
+ add_subdirectory(src)
+-add_subdirectory(docs)
+-add_subdirectory(tests)
+ 
+ install(FILES package.xml DESTINATION share/swiftnav)
+-- 
+2.0.4
+
