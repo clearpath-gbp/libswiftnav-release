@@ -1,7 +1,7 @@
-From 9b007ba3984f49769e2f33cd9c65aeffb9f0e6ca Mon Sep 17 00:00:00 2001
+From 3748d6b8f95dd10c3e80375645d02be81801a471 Mon Sep 17 00:00:00 2001
 From: Mike Purvis <mpurvis@clearpathrobotics.com>
 Date: Thu, 3 Oct 2013 15:23:11 -0400
-Subject: [PATCH 3/3] Avoid building docs and tests.
+Subject: [PATCH 3/4] Avoid building docs and tests.
 
 ---
  CMakeLists.txt | 2 --
@@ -20,5 +20,5 @@ index ea39cdf..fc011b3 100755
  
  install(FILES package.xml DESTINATION share/swiftnav)
 -- 
-2.0.4
+1.9.1
 

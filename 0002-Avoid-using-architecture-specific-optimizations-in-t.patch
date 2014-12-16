@@ -1,7 +1,7 @@
-From f65e04674bf7490dd21d7352a658bf6e710727cf Mon Sep 17 00:00:00 2001
+From b57b547e4ec25fca0523ce44751a88f067c1c97c Mon Sep 17 00:00:00 2001
 From: Mike Purvis <mpurvis@clearpathrobotics.com>
 Date: Thu, 3 Oct 2013 15:22:28 -0400
-Subject: [PATCH 2/3] Avoid using architecture-specific optimizations in the
+Subject: [PATCH 2/4] Avoid using architecture-specific optimizations in the
  build farm.
 
 ---
@@ -29,5 +29,5 @@ index f2c961a..ea39cdf 100755
  add_subdirectory(CBLAS)
  add_subdirectory(lapacke)
 -- 
-2.0.4
+1.9.1
 
