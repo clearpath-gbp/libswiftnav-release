@@ -1,4 +1,4 @@
-From 9d7c33c45d43290492b5ffd21dbee0442c764de8 Mon Sep 17 00:00:00 2001
+From 11445e95a8ea63ae56dbd0912d7d7f873d085a0d Mon Sep 17 00:00:00 2001
 From: Mike Purvis <mpurvis@clearpathrobotics.com>
 Date: Sat, 7 Sep 2013 08:33:55 -0400
 Subject: [PATCH 1/4] Added install rule for package.xml

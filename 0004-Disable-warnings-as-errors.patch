@@ -1,0 +1,25 @@
+From 829de372bf553c3a2143fdead94336052a369d78 Mon Sep 17 00:00:00 2001
+From: Mike Purvis <mpurvis@clearpathrobotics.com>
+Date: Tue, 16 Dec 2014 07:29:58 -0500
+Subject: [PATCH 4/4] Disable warnings as errors.
+
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index fc011b3..d90bfdd 100755
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -50,7 +50,7 @@ cmake_minimum_required(VERSION 2.8)
+ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+ 
+ # Some compiler options used globally
+-set(CMAKE_C_FLAGS "-Wall -Wextra -Wno-strict-prototypes -Wno-unknown-warning-option -Werror -std=gnu99 ${CMAKE_C_FLAGS}")
++set(CMAKE_C_FLAGS "-Wall -Wextra -Wno-strict-prototypes -Wno-unknown-warning-option -std=gnu99 ${CMAKE_C_FLAGS}")
+ 
+ add_subdirectory(clapack-3.2.1-CMAKE)
+ add_subdirectory(CBLAS)
+-- 
+1.9.1
+
