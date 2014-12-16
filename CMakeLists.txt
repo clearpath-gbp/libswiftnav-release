@@ -51,6 +51,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 # Some compiler options used globally
 set(CMAKE_C_FLAGS "-Wall -Wextra -Wno-strict-prototypes -Wno-unknown-warning-option -Werror -std=gnu99 ${CMAKE_C_FLAGS}")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error=unknown-warning")
 
 add_subdirectory(clapack-3.2.1-CMAKE)
 add_subdirectory(CBLAS)
